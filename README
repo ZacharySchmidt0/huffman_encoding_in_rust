@@ -1,0 +1,111 @@
+Author: Zachary Schmidt
+Date: Jan 21, 2023
+
+This entire project was completed solely by myself, with only minor help from ChatGPT for debugging
+Rust-specific features.
+
+I chose to solve this problem in Rust as I'm learning it for one of my courses. It's also a rapidly growing
+language that is widely used.
+
+
+Design Overview:
+To solve the compression issue, I implemented one of the simplest lossless compression algorithms: Huffman encoding.
+It works by taking advantage of the non-uniform distribution of data: for example, the letter 'e' is used much
+more frequently than 'q'. With Huffman encoding, more frequently occurring bytes are assigned shorter bitstrings,
+while less frequently used bytes are assigned longer bitstrings.
+
+Most frequent byte encoding: 1
+Second most freq. byte encoding: 01
+3rd       ""            ""     : 001
+4th       ""            ""     : 0001
+            .
+            .
+            .
+Least frqeuent byte encoding: 0000000000...1
+
+Although Huffman encoding is usually achieved with a Tree data structure, I simply used a HashMap that maps
+byte value to bitstring encoded value (and vice versa in another HashMap).
+
+
+Program's steps to compress:
+1) Count the number of occurrences of each byte value in the array
+2) Map more frequent byte values to shorter bitstrings and store the mapping in a HashMap
+3) Loop through the raw data and convert bytes to corresponding bitstrings
+4) Re-store the now encoded values into the array
+
+
+Additional comments:
+- I also wrote a decompression function that takes the compressed data array and uses another HashMap to
+  un-encode the data.
+
+- I wrote a helper function print_stats() that prints the original data and processed (compressed then decompressed)
+  data side-by-side. It also prints the compression ratio (how much smaller the compressed data is). The ratio can
+  vary widely based on how uniformly distributed the data is (if data is completely uniform/random, compression
+  is almost useless).
+
+- To run the program, simply run the main file. I included an example 50-element byte array to test on, but feel
+  free to use your own array!
+
+
+
+
+Test results:
+With input array = [
+        34, 12, 78, 5, 92, 34, 20, 76, 92, 8, 45, 12, 106, 56, 78, 92, 34, 20, 45, 106,
+        18, 92, 34, 76, 5, 56, 106, 45, 20, 8, 92, 78, 12, 92, 20, 56, 34, 76, 106, 5,
+        92, 8, 34, 45, 12, 122, 0, 106, 1, 89
+    ]
+
+Output = 
+Compression ratio: 0.76
+Original  ---   Processed
+   34    ---        34
+   12    ---        12
+   78    ---        78
+    5    ---         5
+   92    ---        92
+   34    ---        34
+   20    ---        20
+   76    ---        76
+   92    ---        92
+    8    ---         8
+   45    ---        45
+   12    ---        12
+   106   ---       106
+   56    ---        56
+   78    ---        78
+   92    ---        92
+   34    ---        34
+   20    ---        20
+   45    ---        45
+   106   ---       106
+   18    ---        18
+   92    ---        92
+   34    ---        34
+   76    ---        76
+    5    ---         5
+   56    ---        56
+   106   ---       106
+   45    ---        45
+   20    ---        20
+    8    ---         8
+   92    ---        92
+   78    ---        78
+   12    ---        12
+   92    ---        92
+   20    ---        20
+   56    ---        56
+   34    ---        34
+   76    ---        76
+   106   ---       106
+    5    ---         5
+   92    ---        92
+    8    ---         8
+   34    ---        34
+   45    ---        45
+   12    ---        12
+   122   ---       122
+    0    ---         0
+   106   ---       106
+    1    ---         1
+   89    ---        89
